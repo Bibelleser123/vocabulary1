@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vocabulary Trainer – Environment (B1+)</title>
+  <style>
+    :root {
+      --green: #2e7d32;
+      --light-green: #a5d6a7;
+      --accent: #ff8f00;
+      --bg: #f1f8e9;
+      --card: #ffffff;
+      --text: #1b2b1b;
+      --muted: #6a8a6a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    header {
+      background: var(--green);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; margin-bottom: .4rem; }
+    header p { opacity: .85; font-size: 1.05rem; }
+    nav {
+      background: #1b5e20;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .3rem;
+      padding: .6rem;
+    }
+    nav a {
+      color: #c8e6c9;
+      text-decoration: none;
+      padding: .4rem .9rem;
+      border-radius: 20px;
+      font-size: .9rem;
+      transition: background .2s;
+    }
+    nav a:hover { background: var(--green); color: white; }
+    .container { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    section {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    }
+    h2 {
+      color: var(--green);
+      font-size: 1.5rem;
+      margin-bottom: 1.2rem;
+      border-left: 5px solid var(--accent);
+      padding-left: .8rem;
+    }
+    h3 { color: var(--green); margin: 1.2rem 0 .6rem; }
+
+    /* Reading */
+    .reading-img {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .vocab-highlight {
+      background: #e8f5e9;
+      border-bottom: 2px solid var(--green);
+      cursor: help;
+      position: relative;
+    }
+    .vocab-highlight:hover::after {
+      content: attr(data-de);
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green);
+      color: white;
+      padding: .3rem .7rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-size: .82rem;
+      z-index: 10;
+    }
+
+    /* Vocab Table */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: var(--green);
+      color: white;
+      padding: .7rem 1rem;
+      text-align: left;
+    }
+    td { padding: .6rem 1rem; border-bottom: 1px solid #e0e0e0; }
+    tr:nth-child(even) td { background: #f9fbe7; }
+    .speak-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--green);
+      transition: transform .15s;
+    }
+    .speak-btn:hover { transform: scale(1.3); }
+
+    /* General Exercise Styles */
+    .exercise { margin-bottom: 1.6rem; }
+    .exercise p { margin-bottom: .5rem; }
+    input[type="text"] {
+      border: 2px solid #c8e6c9;
+      border-radius: 6px;
+      padding: .35rem .6rem;
+      font-size: .95rem;
+      width: 160px;
+      transition: border .2s;
+    }
+    input[type="text"]:focus { outline: none; border-color: var(--green); }
+    input.correct { border-color: #388e3c !important; background: #e8f5e9 !important; }
+    input.wrong   { border-color: #d32f2f !important; background: #ffebee !important; }
+    .btn {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.3rem;
+      cursor: pointer;
+      font-size: .95rem;
+      margin-top: .8rem;
+      transition: background .2s;
+    }
+    .btn:hover { background: #1b5e20; }
+    .btn-accent { background: var(--accent); }
+    .btn-accent:hover { background: #e65100; }
+    .feedback {
+      margin-top: .7rem;
+      font-weight: 600;
+      font-size: .95rem;
+      min-height: 1.4rem;
+    }
+    .feedback.good { color: #2e7d32; }
+    .feedback.bad  { color: #c62828; }
+
+    /* ── MATCHING ── */
+    .match-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .match-col-header {
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: .4rem;
+      text-align: center;
+    }
+    .words-pool {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .match-word {
+      background: #e8f5e9;
+      border: 2px solid var(--light-green);
+      border-radius: 8px;
+      padding: .5rem .9rem;
+      cursor: grab;
+      font-weight: 600;
+      text-align: center;
+      transition: background .15s, opacity .15s;
+      user-select: none;
+    }
+    .match-word:active  { cursor: grabbing; }
+    .match-word.dragging { opacity: .35; }
+    .drop-zones {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .drop-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .drop-label {
+      min-width: 120px;
+      font-size: .9rem;
+      color: var(--text);
+    }
+    .drop-zone {
+      flex: 1;
+      min-height: 38px;
+      background: #fff9c4;
+      border: 2px dashed #f9a825;
+      border-radius: 8px;
+      padding: .4rem .7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      transition: background .15s;
+      position: relative;
+    }
+    .drop-zone.drag-over { background: #ffe0b2; border-color: var(--accent); }
+    .drop-zone.correct-zone { background: #c8e6c9; border-color: #388e3c; border-style: solid; }
+    .drop-zone.wrong-zone  { background: #ffcdd2; border-color: #d32f2f; border-style: solid; }
+    .drop-zone .placed-word {
+      font-weight: 700;
+      color: #1b5e20;
+    }
+    .drop-zone .remove-btn {
+      margin-left: .4rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #888;
+      font-size: .85rem;
+    }
+
+    /* Definition Quiz */
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #f9fbe7;
+      border: 2px solid #c8e6c9;
+      border-radius: 8px;
+      padding: .55rem 1rem;
+      margin: .4rem 0;
+      cursor: pointer;
+      transition: background .2s, border .2s;
+      font-size: .95rem;
+    }
+    .quiz-option:hover:not(:disabled) { background: #e8f5e9; }
+    .quiz-option.correct-ans { background: #c8e6c9 !important; border-color: #388e3c !important; }
+    .quiz-option.wrong-ans   { background: #ffcdd2 !important; border-color: #d32f2f !important; }
+
+    /* Word Order */
+    .chip {
+      display: inline-block;
+      background: var(--light-green);
+      border: 2px solid var(--green);
+      border-radius: 20px;
+      padding: .3rem .8rem;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: background .2s;
+      margin: .2rem;
+    }
+    .chip:hover:not(.used) { background: #81c784; }
+    .chip.used { opacity: .3; pointer-events: none; }
+    .sentence-builder {
+      min-height: 46px;
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      padding: .5rem;
+      margin: .6rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+      align-items: center;
+    }
+    .built-chip {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      border-radius: 20px;
+      padding: .3rem .8rem;
+      cursor: pointer;
+      font-size: .9rem;
+      margin: .1rem;
+    }
+
+    /* True/False */
+    .tf-row {
+      margin: .6rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: .7rem;
+      flex-wrap: wrap;
+      padding: .4rem;
+      border-radius: 6px;
+    }
+    .tf-stmt { flex: 1; min-width: 200px; }
+    .tf-btn {
+      border: 2px solid var(--green);
+      background: white;
+      border-radius: 6px;
+      padding: .3rem .8rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .tf-btn:hover { background: var(--light-green); }
+    .tf-btn.sel-true  { background: #c8e6c9; border-color: #388e3c; }
+    .tf-btn.sel-false { background: #ffcdd2; border-color: #d32f2f; }
+
+    /* Crossword */
+    .crossword-grid {
+      display: inline-grid;
+      gap: 2px;
+      margin-bottom: 1rem;
+    }
+    .cw-cell {
+      width: 34px; height: 34px;
+      border: 1.5px solid #999;
+      position: relative;
+      background: white;
+    }
+    .cw-cell.black { background: #333; border-color: #333; }
+    .cw-cell input {
+      width: 100%; height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: .85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text);
+      padding: 0;
+    }
+    .cw-cell input:focus { outline: none; background: #fff9c4; }
+    .cw-num {
+      position: absolute;
+      top: 1px; left: 2px;
+      font-size: .48rem;
+      font-weight: 700;
+      color: #555;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    /* Progress */
+    .progress-wrap { background: #e0e0e0; border-radius: 20px; height: 12px; margin: .5rem 0 1rem; }
+    .progress-bar  { background: var(--green); height: 12px; border-radius: 20px; transition: width .4s; }
+
+    footer {
+      background: var(--green);
+      color: #c8e6c9;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: .88rem;
+    }
+    @media(max-width:600px){
+      .match-area { grid-template-columns: 1fr; }
+      input[type="text"] { width: 110px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 Vocabulary Trainer – Environment</h1>
+  <p>Class 9 &nbsp;|&nbsp; Level B1+ &nbsp;|&nbsp; English</p>
+</header>
+
+<nav>
+  <a href="#texts">📖 Texts</a>
+  <a href="#vocab">📋 Vocabulary</a>
+  <a href="#cloze">✏️ Cloze</a>
+  <a href="#matching">🔗 Matching</a>
+  <a href="#definitions">❓ Definitions</a>
+  <a href="#irregular">🔄 Irregular Verbs</a>
+  <a href="#wordorder">🧩 Word Order</a>
+  <a href="#truefalse">✅ True/False</a>
+  <a href="#translate">🌐 Translation</a>
+  <a href="#crossword">🔤 Crossword</a>
+</nav>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════
+     1 · READING TEXTS
+══════════════════════════════════════ -->
+<section id="texts">
+  <h2>📖 Reading Texts</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Hover over the <span class="vocab-highlight" data-de="highlighted words">highlighted words</span>
+    to see the German translation.
+  </p>
+
+  <h3>Text 1 – Food, Farming and Our Planet</h3>
+  <img class="reading-img"
+       src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=900&q=80"
+       alt="Green farmland – sustainable agriculture">
+  <p>
+    Many people today are <span class="vocab-highlight" data-de="sich sorgen um">concerned about</span>
+    the food they eat. The way our food is produced is an important
+    <span class="vocab-highlight" data-de="Faktor">factor</span> for the health of our planet.
+    <span class="vocab-highlight" data-de="Massentierhaltung">Factory farming</span>, for example,
+    produces large <span class="vocab-highlight" data-de="Mengen">quantities</span> of meat and dairy
+    products very cheaply. However, it also releases enormous amounts of
+    <span class="vocab-highlight" data-de="Treibhausgase">greenhouse gases</span> into the atmosphere.
+    Scientists have <span class="vocab-highlight" data-de="angekündigt">announced</span> that agriculture
+    is responsible for nearly a quarter of all global emissions.
+  </p>
+  <p style="margin-top:.8rem;">
+    A <span class="vocab-highlight" data-de="herkömmliche">conventional</span> diet that includes a lot
+    of red meat is not only bad for the climate – it can also cause people to become
+    <span class="vocab-highlight" data-de="übergewichtig">overweight</span>.
+    <span class="vocab-highlight" data-de="Trotzdem">Nevertheless</span>, many
+    <span class="vocab-highlight" data-de="Kunden">customers</span> find it difficult to change their
+    habits because fast food is simply too
+    <span class="vocab-highlight" data-de="bequem, praktisch">convenient</span>. The
+    <span class="vocab-highlight" data-de="Bequemlichkeit">convenience</span> of ordering a
+    <span class="vocab-highlight" data-de="Lieferung">delivery</span> from an app is hard to resist.
+    Experts <span class="vocab-highlight" data-de="erklären, stellen fest">state</span> that we should
+    <span class="vocab-highlight" data-de="kombinieren">combine</span> a healthier
+    <span class="vocab-highlight" data-de="Ernährung">diet</span> with smarter shopping choices.
+  </p>
+  <p style="margin-top:.8rem;">
+    Products like <span class="vocab-highlight" data-de="Kakao">cocoa</span> are often grown on
+    <span class="vocab-highlight" data-de="Plantagen">plantations</span> that destroy rainforests.
+    We can <span class="vocab-highlight" data-de="auf etw. verzichten">do without</span> many of these
+    products or choose fair-trade alternatives. It is our
+    <span class="vocab-highlight" data-de="Pflicht">duty</span> to make better choices –
+    because it truly <span class="vocab-highlight" data-de="wichtig ist">matters</span>.
+  </p>
+
+  <h3>Text 2 – Energy, Technology and the Future</h3>
+  <img class="reading-img"
+       src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=900&q=80"
+       alt="Wind turbines in a green landscape">
+  <p>
+    One of the most <span class="vocab-highlight" data-de="effizient">efficient</span> ways to fight
+    climate change is to switch from fossil fuels to renewable energy.
+    <span class="vocab-highlight" data-de="Windparks">Wind farms</span> and solar panels can
+    <span class="vocab-highlight" data-de="erzeugen">generate</span> electricity without releasing
+    harmful <span class="vocab-highlight" data-de="Treibhausgase">greenhouse gases</span>. Governments
+    around the world have begun to
+    <span class="vocab-highlight" data-de="ankündigen">announce</span> ambitious targets: many old coal
+    <span class="vocab-highlight" data-de="Kraftwerke">power stations</span> are being shut down and
+    replaced by cleaner <span class="vocab-highlight" data-de="technische">technical</span> solutions.
+  </p>
+  <p style="margin-top:.8rem;">
+    Smart <span class="vocab-highlight" data-de="Geräte">devices</span> connected by
+    <span class="vocab-highlight" data-de="Kabel">cables</span> and wireless networks offer
+    <span class="vocab-highlight" data-de="breite">broad</span> possibilities for managing energy at home.
+    A new <span class="vocab-highlight" data-de="Methode">method</span> called "demand response" allows
+    electricity companies to <span class="vocab-highlight" data-de="ermutigen">encourage</span> customers
+    to use less power during peak hours. Experts
+    <span class="vocab-highlight" data-de="vorhersagen">predict</span> that
+    <span class="vocab-highlight" data-de="schließlich">eventually</span> every household will use such
+    systems. <span class="vocab-highlight" data-de="Dürren">Droughts</span> caused by climate change also
+    make it necessary to
+    <span class="vocab-highlight" data-de="setzen">set</span> clear targets for water-saving
+    <span class="vocab-highlight" data-de="Geräte">devices</span>.
+  </p>
+  <p style="margin-top:.8rem;">
+    <span class="vocab-highlight" data-de="Mobilität">Mobility</span> is another key issue. Electric
+    cars are becoming more <span class="vocab-highlight" data-de="verfügbar">available</span>, and many
+    <span class="vocab-highlight" data-de="Arbeitgeber">employers</span> now offer their staff e-bikes or
+    public transport tickets. The debate is often framed as comfort
+    <span class="vocab-highlight" data-de="gegen">versus</span> sustainability – but the two do not have
+    to be opposites. Every <span class="vocab-highlight" data-de="Schritt / Bewegung">move</span> counts,
+    and every <span class="vocab-highlight" data-de="Stimme / Abstimmung">vote</span> matters.
+    Remember: <em>"<span class="vocab-highlight" data-de="Deine Zeit ist abgelaufen.">Your time is up.</span>"</em>
+    – the planet cannot wait any longer.
+  </p>
+
+  <h3>Text 3 – Health, Cosmetics and Responsibility</h3>
+  <img class="reading-img"
+       src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=900&q=80"
+       alt="Natural cosmetics and green plants">
+  <p>
+    The beauty industry uses a <span class="vocab-highlight" data-de="breite">broad</span> range of
+    ingredients, some of which come from endangered ecosystems. Many
+    <span class="vocab-highlight" data-de="Kosmetikprodukte">cosmetics</span> contain palm oil grown on
+    <span class="vocab-highlight" data-de="Plantagen">plantations</span> that were once tropical forests.
+    Good <span class="vocab-highlight" data-de="Gesundheitsversorgung">health care</span> should not come
+    at the expense of nature. Scientists are developing new
+    <span class="vocab-highlight" data-de="Methoden">methods</span> to create products that
+    <span class="vocab-highlight" data-de="passen für">suit</span> consumers without harming the
+    environment. Some <span class="vocab-highlight" data-de="Medikamente / Drogen">drugs</span> are also
+    tested on animals raised in poor conditions, which raises serious
+    <span class="vocab-highlight" data-de="emotionale">emotional</span> and ethical questions.
+  </p>
+  <p style="margin-top:.8rem;">
+    From <span class="vocab-highlight" data-de="Kindheit">childhood</span> onwards, people are
+    influenced by advertising. We
+    <span class="vocab-highlight" data-de="kaum">hardly</span> think about where our products come from.
+    But it <span class="vocab-highlight" data-de="ist wichtig">matters</span> – for our planet, for
+    <span class="vocab-highlight" data-de="gleiche">equal</span> rights of farmers and workers, and for
+    our own health. After a long day, we may feel
+    <span class="vocab-highlight" data-de="erschöpft">exhausted</span>, but we should still
+    <span class="vocab-highlight" data-de="ansprechen">address</span> these issues. Our
+    <span class="vocab-highlight" data-de="Stimmung">mood</span> affects our choices – and our choices
+    affect the world. Some companies engage in
+    <span class="vocab-highlight" data-de="Betrug">fraud</span> by labelling products as "green" when
+    they are not. Always be
+    <span class="vocab-highlight" data-de="auf den Punkt">to the point</span> when asking questions,
+    and make sure that <span class="vocab-highlight" data-de="gleiche">equal</span> standards apply to all.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════
+     2 · VOCABULARY TABLE
+══════════════════════════════════════ -->
+<section id="vocab">
+  <h2>📋 Vocabulary List</h2>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="vocab-progress" style="width:0%"></div>
+  </div>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Click 🔊 to hear the word pronounced. Tick the words you already know!
+  </p>
+  <table>
+    <thead>
+      <tr><th>Know?</th><th>English</th><th>🔊</th><th>German</th></tr>
+    </thead>
+    <tbody id="vocab-table-body"></tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════
+     3 · CLOZE TEST
+══════════════════════════════════════ -->
+<section id="cloze">
+  <h2>✏️ Exercise 1 – Cloze Test</h2>
+  <p style="color:var(--muted);margin-bottom:.5rem;">
+    Fill in the correct word or phrase. The German translation is shown as a hint.
+  </p>
+  <div id="word-bank"
+       style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;
+              background:#f9fbe7;padding:.8rem;border-radius:8px;"></div>
+  <div id="cloze-text"></div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;">
+    <button class="btn" onclick="checkCloze()">Check Answers</button>
+    <button class="btn btn-accent" onclick="resetCloze()">Reset</button>
+  </div>
+  <div class="feedback" id="cloze-feedback"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     4 · MATCHING
+══════════════════════════════════════ -->
+<section id="matching">
+  <h2>🔗 Exercise 2 – Matching (Drag &amp; Drop)</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Drag each English word from the left column and drop it onto its correct
+    German translation on the right.
+  </p>
+  <div id="matching-container"></div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+    <button class="btn" onclick="checkMatching()">Check</button>
+    <button class="btn btn-accent" onclick="initMatching()">Shuffle &amp; Reset</button>
+  </div>
+  <div class="feedback" id="match-feedback"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     5 · DEFINITION QUIZ
+══════════════════════════════════════ -->
+<section id="definitions">
+  <h2>❓ Exercise 3 – Definition Quiz</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Choose the correct definition for each word.
+  </p>
+  <div id="def-quiz-container"></div>
+  <button class="btn" onclick="checkDefQuiz()">Check All</button>
+  <div class="feedback" id="def-feedback"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     6 · IRREGULAR VERBS
+══════════════════════════════════════ -->
+<section id="irregular">
+  <h2>🔄 Exercise 4 – Irregular Verbs</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Complete the table with the missing verb forms.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Infinitive</th><th>Simple Past</th><th>Past Participle</th><th>German</th></tr>
+    </thead>
+    <tbody id="irr-table"></tbody>
+  </table>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;">
+    <button class="btn" onclick="checkIrregular()">Check</button>
+    <button class="btn btn-accent" onclick="resetIrregular()">Reset</button>
+  </div>
+  <div class="feedback" id="irr-feedback"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     7 · WORD ORDER
+══════════════════════════════════════ -->
+<section id="wordorder">
+  <h2>🧩 Exercise 5 – Word Order</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Click the words in the correct order to build the English sentence.
+    Click a placed word to remove it.
+  </p>
+  <div id="wordorder-container"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     8 · TRUE / FALSE
+══════════════════════════════════════ -->
+<section id="truefalse">
+  <h2>✅ Exercise 6 – True or False?</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Read each statement and decide whether it is true or false.
+  </p>
+  <div id="tf-container"></div>
+  <button class="btn" onclick="checkTF()">Check</button>
+  <div class="feedback" id="tf-feedback"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     9 · TRANSLATION
+══════════════════════════════════════ -->
+<section id="translate">
+  <h2>🌐 Exercise 7 – Translate the Sentences</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Translate each sentence from German into English, then click "Show Answer".
+  </p>
+  <div id="translate-container"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     10 · MINI CROSSWORD
+══════════════════════════════════════ -->
+<section id="crossword">
+  <h2>🔤 Exercise 8 – Mini Crossword</h2>
+  <p style="color:var(--muted);margin-bottom:1rem;">
+    Solve the clues and fill in the crossword.
+  </p>
+  <div style="overflow-x:auto;">
+    <div class="crossword-grid" id="cw-grid"
+         style="grid-template-columns:repeat(10,34px);"></div>
+  </div>
+  <div id="cw-clues" style="margin-top:.8rem;"></div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;">
+    <button class="btn" onclick="checkCrossword()">Check</button>
+    <button class="btn btn-accent" onclick="revealCrossword()">Reveal All</button>
+  </div>
+  <div class="feedback" id="cw-feedback"></div>
+</section>
+
+</div><!-- /container -->
+
+<footer>
+  Vocabulary Trainer – Environment &nbsp;|&nbsp; Class 9 English &nbsp;|&nbsp;
+  🔊 Powered by Web Speech API
+</footer>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════
+   SPEECH  –  robust English voice selection
+═══════════════════════════════════════════ */
+let englishVoice = null;
+
+function loadEnglishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return;          // not ready yet
+
+  // Priority list: prefer named high-quality voices
+  const preferred = [
+    "Google UK English Female",
+    "Google UK English Male",
+    "Google US English",
+    "Microsoft Libby Online (Natural) - English (United Kingdom)",
+    "Microsoft Ryan Online (Natural) - English (United Kingdom)",
+    "Microsoft Aria Online (Natural) - English (United States)",
+  ];
+
+  for (const name of preferred) {
+    const v = voices.find(v => v.name === name);
+    if (v) { englishVoice = v; return; }
+  }
+
+  // Fallback 1: any en-GB voice
+  englishVoice = voices.find(v => v.lang === "en-GB") ||
+  // Fallback 2: any en-US voice
+                 voices.find(v => v.lang === "en-US") ||
+  // Fallback 3: any English voice
+                 voices.find(v => v.lang.startsWith("en")) ||
+                 null;
+}
+
+// Voices load asynchronously in most browsers
+window.speechSynthesis.onvoiceschanged = loadEnglishVoice;
+loadEnglishVoice(); // also try immediately (works in Firefox)
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    alert("Your browser does not support speech synthesis.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+
+  // Re-check voice each time (some browsers are lazy)
+  if (!englishVoice) loadEnglishVoice();
+
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang  = "en-GB";
+  utt.rate  = 0.88;
+  utt.pitch = 1;
+  if (englishVoice) utt.voice = englishVoice;
+  window.speechSynthesis.speak(utt);
+}
+
+/* ═══════════════════════════════════════════
+   VOCABULARY DATA
+═══════════════════════════════════════════ */
+const vocab = [
+  {en:"cocoa",                    de:"Kakao"},
+  {en:"quantity",                 de:"Menge, Quantität"},
+  {en:"cosmetics",                de:"Kosmetik"},
+  {en:"plantation",               de:"Plantage"},
+  {en:"health care",              de:"Gesundheitsversorgung"},
+  {en:"hardly",                   de:"kaum"},
+  {en:"exhausted",                de:"erschöpft"},
+  {en:"childhood",                de:"Kindheit"},
+  {en:"emotional",                de:"emotional"},
+  {en:"matter",                   de:"wichtig sein / Angelegenheit"},
+  {en:"diet",                     de:"Ernährung, Diät"},
+  {en:"conventional",             de:"konventionell, herkömmlich"},
+  {en:"factor",                   de:"Faktor"},
+  {en:"overweight",               de:"übergewichtig"},
+  {en:"greenhouse gas",           de:"Treibhausgas"},
+  {en:"factory farming",          de:"Massentierhaltung"},
+  {en:"drug",                     de:"Medikament / Droge"},
+  {en:"to combine",               de:"kombinieren, verbinden"},
+  {en:"to address",               de:"ansprechen / sich wenden an"},
+  {en:"convenient",               de:"bequem, praktisch"},
+  {en:"convenience",              de:"Bequemlichkeit, Komfort"},
+  {en:"to state",                 de:"feststellen, erklären"},
+  {en:"nevertheless",             de:"trotzdem, dennoch"},
+  {en:"to be concerned about",    de:"sich Sorgen machen um"},
+  {en:"broad",                    de:"breit, weit"},
+  {en:"equal",                    de:"gleich, gleichwertig"},
+  {en:"device",                   de:"Gerät"},
+  {en:"method",                   de:"Methode"},
+  {en:"efficient",                de:"effizient"},
+  {en:"calm",                     de:"ruhig"},
+  {en:"to predict",               de:"vorhersagen"},
+  {en:"to encourage",             de:"ermutigen, fördern"},
+  {en:"eventually",               de:"schließlich, letztendlich"},
+  {en:"to announce",              de:"ankündigen, bekanntgeben"},
+  {en:"technical",                de:"technisch"},
+  {en:"to suit somebody",         de:"jemandem passen / gefallen"},
+  {en:"mood",                     de:"Stimmung, Laune"},
+  {en:"versus",                   de:"gegen, gegenüber"},
+  {en:"to be available",          de:"verfügbar sein"},
+  {en:"delivery",                 de:"Lieferung"},
+  {en:"customer",                 de:"Kunde / Kundin"},
+  {en:"fraud",                    de:"Betrug"},
+  {en:"mobility",                 de:"Mobilität"},
+  {en:"employer",                 de:"Arbeitgeber"},
+  {en:"power station",            de:"Kraftwerk"},
+  {en:"drought",                  de:"Dürre"},
+  {en:"to do without",            de:"auf etwas verzichten"},
+  {en:"wind farm",                de:"Windpark"},
+  {en:"cable",                    de:"Kabel"},
+  {en:"to generate",              de:"erzeugen, generieren"},
+  {en:"to the point",             de:"auf den Punkt, präzise"},
+  {en:"duty",                     de:"Pflicht, Aufgabe"},
+  {en:"to set",                   de:"setzen, stellen (set–set–set)"},
+  {en:"move",                     de:"Schritt / sich bewegen"},
+  {en:"vote",                     de:"abstimmen / Stimme"},
+  {en:"Your time is up.",         de:"Deine/Ihre Zeit ist abgelaufen."}
+];
+
+/* ═══════════════════════════════════════════
+   VOCABULARY TABLE
+═══════════════════════════════════════════ */
+const knownSet = new Set();
+
+function buildVocabTable() {
+  const tbody = document.getElementById("vocab-table-body");
+  tbody.innerHTML = "";
+  vocab.forEach((v, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input type="checkbox" onchange="toggleKnown(${i},this)"></td>
+      <td><strong>${v.en}</strong></td>
+      <td><button class="speak-btn" onclick="speak('${v.en.replace(/'/g,"\\'")}')" title="Listen">🔊</button></td>
+      <td>${v.de}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleKnown(i, cb) {
+  cb.checked ? knownSet.add(i) : knownSet.delete(i);
+  const pct = Math.round(knownSet.size / vocab.length * 100);
+  document.getElementById("vocab-progress").style.width = pct + "%";
+}
+
+/* ═══════════════════════════════════════════
+   CLOZE TEST
+═══════════════════════════════════════════ */
+const clozeData = [
+  {sentence:"Factory farming releases huge ___ of greenhouse gases every year.",
+   answer:"quantities", hint:"Mengen"},
+  {sentence:"Scientists have ___ that we must reduce our carbon emissions immediately.",
+   answer:"announced", hint:"angekündigt"},
+  {sentence:"It is our ___ to protect the environment for future generations.",
+   answer:"duty", hint:"Pflicht"},
+  {sentence:"Wind farms can ___ clean electricity without burning fossil fuels.",
+   answer:"generate", hint:"erzeugen"},
+  {sentence:"Many customers find fast food too ___ to resist.",
+   answer:"convenient", hint:"bequem"},
+  {sentence:"Experts ___ that electric cars will replace petrol cars by 2040.",
+   answer:"predict", hint:"vorhersagen"},
+  {sentence:"A long ___ with little rain can destroy entire harvests.",
+   answer:"drought", hint:"Dürre"},
+  {sentence:"We should try to ___ a healthy diet with regular exercise.",
+   answer:"combine", hint:"kombinieren"},
+  {sentence:"The government wants to ___ the issue of plastic waste in the ocean.",
+   answer:"address", hint:"ansprechen"},
+  {sentence:"The ___ of ordering food online has changed how we eat.",
+   answer:"convenience", hint:"Bequemlichkeit"},
+  {sentence:"Old coal ___ must be replaced by cleaner energy sources.",
+   answer:"power stations", hint:"Kraftwerke"},
+  {sentence:"It is hard to ___ plastic packaging in everyday life.",
+   answer:"do without", hint:"verzichten auf"},
+  {sentence:"The company was accused of ___ after lying about its green credentials.",
+   answer:"fraud", hint:"Betrug"},
+  {sentence:"Electric cars improve urban ___ and reduce air pollution.",
+   answer:"mobility", hint:"Mobilität"},
+  {sentence:"Many ___ now encourage their staff to use public transport.",
+   answer:"employers", hint:"Arbeitgeber"}
+];
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+function initCloze() {
+  const bank = document.getElementById("word-bank");
+  const text = document.getElementById("cloze-text");
+  const answers = shuffle(clozeData.map(c => c.answer));
+  bank.innerHTML = "<strong style='margin-right:.4rem;color:var(--muted);'>Word bank:</strong> " +
+    answers.map(w =>
+      `<span style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;
+                    padding:.15rem .55rem;font-size:.88rem;">${w}</span>`
+    ).join(" ");
+
+  text.innerHTML = "<ol>" + clozeData.map((c, i) => {
+    const parts = c.sentence.split("___");
+    return `<li style="margin:.55rem 0;">
+      ${parts[0]}<input type="text" id="cl-${i}" data-answer="${c.answer}"
+        placeholder="${c.hint}" style="width:${c.answer.length > 10 ? 180 : 140}px;">
+      ${parts[1]}
+    </li>`;
+  }).join("") + "</ol>";
+
+  document.getElementById("cloze-feedback").textContent = "";
+}
+
+function checkCloze() {
+  let correct = 0;
+  clozeData.forEach((c, i) => {
+    const inp = document.getElementById("cl-" + i);
+    const ok = inp.value.trim().toLowerCase() === c.answer.toLowerCase();
+    inp.classList.toggle("correct", ok);
+    inp.classList.toggle("wrong", !ok);
+    if (ok) correct++;
+  });
+  setFeedback("cloze-feedback", correct, clozeData.length);
+}
+
+function resetCloze() {
+  clozeData.forEach((_, i) => {
+    const inp = document.getElementById("cl-" + i);
+    inp.value = ""; inp.className = "";
+  });
+  document.getElementById("cloze-feedback").textContent = "";
+}
+
+/* ═══════════════════════════════════════════
+   MATCHING  –  completely rewritten
+═══════════════════════════════════════════ */
+const matchPairs = [
+  {en:"drought",          de:"Dürre"},
+  {en:"duty",             de:"Pflicht"},
+  {en:"fraud",            de:"Betrug"},
+  {en:"exhausted",        de:"erschöpft"},
+  {en:"nevertheless",     de:"trotzdem"},
+  {en:"efficient",        de:"effizient"},
+  {en:"plantation",       de:"Plantage"},
+  {en:"employer",         de:"Arbeitgeber"},
+  {en:"delivery",         de:"Lieferung"},
+  {en:"cable",            de:"Kabel"}
+];
+
+/*
+  Strategy:
+  - Left column: English words (draggable chips), order shuffled each round.
+  - Right column: German words (drop zones), order shuffled independently.
+  - Each drop zone stores data-correct (the English word that belongs there).
+  - Each drop zone stores data-dropped (what was actually dropped there).
+  - Checking: compare data-dropped with data-correct for every zone.
+*/
+
+function initMatching() {
+  const shuffledEN = shuffle(matchPairs.map(p => p.en));
+  const shuffledDE = shuffle(matchPairs.map(p => ({ en: p.en, de: p.de })));
+
+  let leftHTML  = shuffledEN.map(en =>
+    `<div class="match-word" id="mw-${en.replace(/\s/g,'_')}"
+          draggable="true"
+          ondragstart="onDragStart(event,'${en}')"
+          ondragend="onDragEnd(event)">
+       🔊 <span onclick="event.stopPropagation();speak('${en}')"
+            style="cursor:pointer;font-size:.85rem;margin-right:.3rem;">🔊</span>${en}
+     </div>`
+  ).join("");
+
+  let rightHTML = shuffledDE.map(item =>
+    `<div class="drop-row">
+       <div class="drop-label">${item.de}</div>
+       <div class="drop-zone"
+            id="dz-${item.en.replace(/\s/g,'_')}"
+            data-correct="${item.en}"
+            data-dropped=""
+            ondragover="onDragOver(event)"
+            ondragleave="onDragLeave(event)"
+            ondrop="onDrop(event,this)">
+         <span class="drop-placeholder" style="color:#bbb;font-size:.85rem;">drop here</span>
+       </div>
+     </div>`
+  ).join("");
+
+  document.getElementById("matching-container").innerHTML = `
+    <div class="match-area">
+      <div>
+        <div class="match-col-header">🇬🇧 English</div>
+        <div class="words-pool" id="words-pool">${leftHTML}</div>
+      </div>
+      <div>
+        <div class="match-col-header">🇩🇪 Deutsch</div>
+        <div class="drop-zones">${rightHTML}</div>
+      </div>
+    </div>`;
+
+  document.getElementById("match-feedback").textContent = "";
+}
+
+let currentDrag = "";
+
+function onDragStart(e, word) {
+  currentDrag = word;
+  e.target.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+}
+function onDragEnd(e) {
+  e.target.classList.remove("dragging");
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add("drag-over");
+}
+function onDragLeave(e) {
+  e.currentTarget.classList.remove("drag-over");
+}
+function onDrop(e, zone) {
+  e.preventDefault();
+  zone.classList.remove("drag-over");
+
+  // If zone already has a word, return it to pool
+  const prev = zone.dataset.dropped;
+  if (prev) {
+    const prevTile = document.getElementById("mw-" + prev.replace(/\s/g,'_'));
+    if (prevTile) prevTile.style.visibility = "visible";
+  }
+
+  // Place new word
+  zone.dataset.dropped = currentDrag;
+  zone.innerHTML =
+    `<span class="placed-word">${currentDrag}</span>
+     <button class="remove-btn" onclick="removeFromZone(this,'${currentDrag}','${zone.id}')" title="Remove">✕</button>`;
+
+  // Hide source tile
+  const srcTile = document.getElementById("mw-" + currentDrag.replace(/\s/g,'_'));
+  if (srcTile) srcTile.style.visibility = "hidden";
+
+  // Reset colour classes
+  zone.classList.remove("correct-zone","wrong-zone");
+}
+
+function removeFromZone(btn, word, zoneId) {
+  const zone = document.getElementById(zoneId);
+  zone.dataset.dropped = "";
+  zone.innerHTML = `<span class="drop-placeholder" style="color:#bbb;font-size:.85rem;">drop here</span>`;
+  zone.classList.remove("correct-zone","wrong-zone");
+
+  const tile = document.getElementById("mw-" + word.replace(/\s/g,'_'));
+  if (tile) tile.style.visibility = "visible";
+}
+
+function checkMatching() {
+  let correct = 0;
+  matchPairs.forEach(pair => {
+    const zone = document.getElementById("dz-" + pair.en.replace(/\s/g,'_'));
+    if (!zone) return;
+    const dropped  = zone.dataset.dropped;
+    const expected = zone.dataset.correct;        // == pair.en
+    const ok = dropped === expected;
+    zone.classList.toggle("correct-zone", ok);
+    zone.classList.toggle("wrong-zone",  !ok);
+    if (ok) correct++;
+  });
+  setFeedback("match-feedback", correct, matchPairs.length);
+}
+
+/* ═══════════════════════════════════════════
+   DEFINITION QUIZ
+═══════════════════════════════════════════ */
+const defQuestions = [
+  {word:"greenhouse gas",
+   correct:"A gas that traps heat in the atmosphere and contributes to global warming.",
+   wrong:["A gas used in fridges to keep food cold.",
+          "A gas that plants release during photosynthesis.",
+          "A gas found only near volcanoes."]},
+  {word:"factory farming",
+   correct:"An intensive system of keeping large numbers of animals in small spaces to produce food cheaply.",
+   wrong:["A traditional farming method using horses and hand tools.",
+          "A method of growing vegetables in large greenhouses.",
+          "A type of organic farming that avoids all chemicals."]},
+  {word:"to be concerned about",
+   correct:"To feel worried or anxious about something.",
+   wrong:["To be completely satisfied with a situation.",
+          "To ignore a problem on purpose.",
+          "To celebrate a positive result."]},
+  {word:"mobility",
+   correct:"The ability to move or travel freely from one place to another.",
+   wrong:["The ability to lift very heavy objects.",
+          "A type of high-speed internet connection.",
+          "A method of storing solar energy in batteries."]},
+  {word:"fraud",
+   correct:"The crime of deceiving someone in order to gain money or an unfair advantage.",
+   wrong:["A method of recycling old plastic products.",
+          "A renewable source of energy from the sun.",
+          "A legal process to protect natural habitats."]},
+  {word:"drought",
+   correct:"A long period of time with little or no rainfall, causing water shortages.",
+   wrong:["A violent storm with extremely strong winds.",
+          "A period of unusually cold and icy weather.",
+          "A sudden flood caused by heavy rainfall."]},
+  {word:"to generate",
+   correct:"To produce or create something, especially electricity or energy.",
+   wrong:["To destroy something in a controlled way.",
+          "To transport goods from one country to another.",
+          "To measure the temperature of a substance."]},
+  {word:"nevertheless",
+   correct:"In spite of that; however; all the same.",
+   wrong:["For that reason; therefore; as a consequence.",
+          "In addition to that; furthermore; what is more.",
+          "As a direct result of; owing to this fact."]}
+];
+
+function buildDefQuiz() {
+  const c = document.getElementById("def-quiz-container");
+  c.innerHTML = defQuestions.map((q, i) => {
+    const opts = shuffle([q.correct, ...q.wrong]);
+    return `<div class="exercise">
+      <p><strong>${i+1}. What does "<em>${q.word}</em>" mean?</strong></p>
+      ${opts.map((o, j) =>
+        `<button class="quiz-option" id="dopt-${i}-${j}"
+                 onclick="selectDef(${i},${j},${o === q.correct})">${o}</button>`
+      ).join("")}
+    </div>`;
+  }).join("");
+  document.getElementById("def-feedback").textContent = "";
+}
+
+const defChosen = {};
+function selectDef(qi, j, correct) {
+  // Remove previous selection highlights for this question
+  document.querySelectorAll(`[id^="dopt-${qi}-"]`).forEach(b => {
+    b.classList.remove("correct-ans","wrong-ans");
+  });
+  defChosen[qi] = correct;
+  document.getElementById(`dopt-${qi}-${j}`)
+          .classList.add(correct ? "correct-ans" : "wrong-ans");
+}
+
+function checkDefQuiz() {
+  let ok = 0;
+  defQuestions.forEach((_, i) => {
+    if (defChosen[i] === true) ok++;
+  });
+  setFeedback("def-feedback", ok, defQuestions.length);
+}
+
+/* ═══════════════════════════════════════════
+   IRREGULAR VERBS
+═══════════════════════════════════════════ */
+const irregularVerbs = [
+  {inf:"set",    past:"set",   pp:"set",     de:"setzen / stellen",  hide:"past"},
+  {inf:"set",    past:"set",   pp:"set",     de:"setzen / stellen",  hide:"pp"},
+  {inf:"go",     past:"went",  pp:"gone",    de:"gehen",             hide:"past"},
+  {inf:"take",   past:"took",  pp:"taken",   de:"nehmen",            hide:"pp"},
+  {inf:"give",   past:"gave",  pp:"given",   de:"geben",             hide:"past"},
+  {inf:"come",   past:"came",  pp:"come",    de:"kommen",            hide:"pp"},
+  {inf:"write",  past:"wrote", pp:"written", de:"schreiben",         hide:"past"},
+  {inf:"begin",  past:"began", pp:"begun",   de:"beginnen",          hide:"pp"},
+  {inf:"choose", past:"chose", pp:"chosen",  de:"wählen",            hide:"past"},
+  {inf:"drive",  past:"drove", pp:"driven",  de:"fahren",            hide:"pp"},
+  {inf:"speak",  past:"spoke", pp:"spoken",  de:"sprechen",          hide:"past"},
+  {inf:"find",   past:"found", pp:"found",   de:"finden",            hide:"pp"}
+];
+
+function buildIrregular() {
+  const tb = document.getElementById("irr-table");
+  tb.innerHTML = irregularVerbs.map((v, i) => `
+    <tr>
+      <td>${v.hide==="inf"
+            ? `<input type="text" id="irr-${i}" data-answer="${v.inf}" style="width:100px;">`
+            : `<strong>${v.inf}</strong>`}</td>
+      <td>${v.hide==="past"
+            ? `<input type="text" id="irr-${i}" data-answer="${v.past}" style="width:100px;">`
+            : v.past}</td>
+      <td>${v.hide==="pp"
+            ? `<input type="text" id="irr-${i}" data-answer="${v.pp}" style="width:100px;">`
+            : v.pp}</td>
+      <td>${v.de}</td>
+    </tr>`).join("");
+}
+
+function checkIrregular() {
+  let ok = 0, total = 0;
+  document.querySelectorAll("[id^='irr-']").forEach(inp => {
+    total++;
+    const correct = inp.value.trim().toLowerCase() === inp.dataset.answer.toLowerCase();
+    inp.classList.toggle("correct", correct);
+    inp.classList.toggle("wrong", !correct);
+    if (correct) ok++;
+  });
+  setFeedback("irr-feedback", ok, total);
+}
+
+function resetIrregular() {
+  document.querySelectorAll("[id^='irr-']").forEach(inp => {
+    inp.value = ""; inp.className = "";
+  });
+  document.getElementById("irr-feedback").textContent = "";
+}
+
+/* ═══════════════════════════════════════════
+   WORD ORDER
+═══════════════════════════════════════════ */
+const sentences = [
+  {words:["Experts","predict","that","eventually","every","household","will","use",
+          "smart","devices","to","save","energy","."],
+   de:"Experten sagen voraus, dass schließlich jeder Haushalt intelligente Geräte nutzen wird, um Energie zu sparen."},
+  {words:["It","is","our","duty","to","do","without","products",
+          "that","harm","the","environment","."],
+   de:"Es ist unsere Pflicht, auf Produkte zu verzichten, die der Umwelt schaden."},
+  {words:["The","government","announced","that","all","old","power","stations",
+          "would","be","closed","by","2030","."],
+   de:"Die Regierung kündigte an, dass alle alten Kraftwerke bis 2030 geschlossen werden."},
+  {words:["Factory","farming","generates","large","quantities","of",
+          "greenhouse","gases","every","year","."],
+   de:"Massentierhaltung erzeugt jedes Jahr große Mengen an Treibhausgasen."}
+];
+
+const woBuilt = {};   // woBuilt[si] = array of {chipIndex, word}
+
+function buildWordOrder() {
+  const c = document.getElementById("wordorder-container");
+  c.innerHTML = sentences.map((s, si) => {
+    const shuffled = shuffle(s.words.map((w, wi) => ({w, wi})));
+    woBuilt[si] = [];
+    return `
+    <div class="exercise" id="wo-${si}">
+      <p><strong>${si+1}. 🇩🇪 ${s.de}</strong></p>
+      <div id="chips-${si}">
+        ${shuffled.map(obj =>
+          `<span class="chip" id="chip-${si}-${obj.wi}"
+                 data-word="${obj.w.replace(/"/g,'&quot;')}"
+                 data-wi="${obj.wi}"
+                 onclick="addWordOrd(${si},${obj.wi},'${obj.w.replace(/'/g,"\\'")}')">
+             ${obj.w}
+           </span>`
+        ).join("")}
+      </div>
+      <div class="sentence-builder" id="sb-${si}"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="btn" onclick="checkWordOrder(${si})">Check</button>
+        <button class="btn btn-accent" onclick="resetWordOrder(${si})">Reset</button>
+      </div>
+      <div class="feedback" id="wo-fb-${si}"></div>
+    </div>`;
+  }).join("");
+}
+
+function addWordOrd(si, wi, word) {
+  woBuilt[si].push({wi, word});
+  document.getElementById(`chip-${si}-${wi}`).classList.add("used");
+  const sb = document.getElementById(`sb-${si}`);
+  const el = document.createElement("span");
+  el.className = "built-chip";
+  el.textContent = word;
+  el.dataset.wi = wi;
+  el.onclick = () => removeWordOrd(si, wi, el);
+  sb.appendChild(el);
+}
+
+function removeWordOrd(si, wi, el) {
+  woBuilt[si] = woBuilt[si].filter(x => x.wi !== wi);
+  document.getElementById(`chip-${si}-${wi}`).classList.remove("used");
+  el.remove();
+}
+
+function checkWordOrder(si) {
+  const built   = woBuilt[si].map(x => x.word).join(" ");
+  const correct = sentences[si].words.join(" ");
+  const fb = document.getElementById(`wo-fb-${si}`);
+  if (built === correct) {
+    fb.textContent = "✅ Correct!"; fb.className = "feedback good";
+  } else {
+    fb.textContent = "❌ Not quite. Correct answer: " + correct;
+    fb.className = "feedback bad";
+  }
+}
+
+function resetWordOrder(si) {
+  woBuilt[si] = [];
+  document.getElementById(`sb-${si}`).innerHTML = "";
+  document.querySelectorAll(`[id^="chip-${si}-"]`).forEach(c => c.classList.remove("used"));
+  document.getElementById(`wo-fb-${si}`).textContent = "";
+}
+
+/* ═══════════════════════════════════════════
+   TRUE / FALSE
+═══════════════════════════════════════════ */
+const tfData = [
+  {stmt:"Factory farming is one of the most effective ways to protect the environment.",
+   correct:false,
+   exp:"False – Factory farming harms the environment by releasing large quantities of greenhouse gases."},
+  {stmt:"Wind farms generate electricity without burning fossil fuels.",
+   correct:true,
+   exp:"True – Wind farms produce clean, renewable electricity."},
+  {stmt:"The convenience of fast food delivery has no effect on people's diets.",
+   correct:false,
+   exp:"False – Convenient food delivery encourages unhealthy eating habits and overconsumption."},
+  {stmt:"Employers can encourage their staff to use more sustainable forms of transport.",
+   correct:true,
+   exp:"True – Many employers now offer e-bikes or subsidised public transport tickets."},
+  {stmt:"Fraud in the cosmetics industry always involves physical violence.",
+   correct:false,
+   exp:"False – Fraud means deception, for example false 'green' labels, not physical violence."},
+  {stmt:"A drought is a long period with little or no rain.",
+   correct:true,
+   exp:"True – This is the correct definition of drought."},
+  {stmt:"'To do without something' means to buy more of it.",
+   correct:false,
+   exp:"False – 'To do without' means to manage or get along without something."},
+  {stmt:"Smart devices can help households use energy more efficiently.",
+   correct:true,
+   exp:"True – Smart technology helps monitor and reduce energy consumption at home."}
+];
+
+function buildTF() {
+  const c = document.getElementById("tf-container");
+  c.innerHTML = tfData.map((t, i) => `
+    <div class="tf-row" id="tf-row-${i}">
+      <span class="tf-stmt">${i+1}. ${t.stmt}</span>
+      <button class="tf-btn" id="tf-t-${i}" onclick="selectTF(${i},true)">TRUE</button>
+      <button class="tf-btn" id="tf-f-${i}" onclick="selectTF(${i},false)">FALSE</button>
+    </div>`).join("");
+  document.getElementById("tf-feedback").textContent = "";
+}
+
+const tfAnswers = {};
+function selectTF(i, val) {
+  tfAnswers[i] = val;
+  document.getElementById(`tf-t-${i}`).className = "tf-btn" + ( val ? " sel-true"  : "");
+  document.getElementById(`tf-f-${i}`).className = "tf-btn" + (!val ? " sel-false" : "");
+}
+
+function checkTF() {
+  let ok = 0;
+  tfData.forEach((t, i) => {
+    const row = document.getElementById(`tf-row-${i}`);
+    const isCorrect = tfAnswers[i] === t.correct;
+    row.style.background = isCorrect ? "#e8f5e9" : "#ffebee";
+    row.title = (isCorrect ? "✅ " : "❌ ") + t.exp;
+    if (isCorrect) ok++;
+  });
+  const fb = document.getElementById("tf-feedback");
+  fb.textContent =
+    `Result: ${ok} / ${tfData.length} correct.  ` +
+    `(Hover over each row to see the explanation.)`;
+  fb.className = "feedback " + (ok === tfData.length ? "good" : "bad");
+}
+
+/* ═══════════════════════════════════════════
+   TRANSLATION
+═══════════════════════════════════════════ */
+const translateData = [
+  {de:"Es ist unsere Pflicht, auf Plastik zu verzichten.",
+   en:"It is our duty to do without plastic."},
+  {de:"Experten sagen voraus, dass die Temperaturen weiter steigen werden.",
+   en:"Experts predict that temperatures will continue to rise."},
+  {de:"Trotzdem kaufen viele Kunden weiterhin Produkte von Plantagen.",
+   en:"Nevertheless, many customers continue to buy products from plantations."},
+  {de:"Die Regierung kündigte an, dass alte Kraftwerke geschlossen werden.",
+   en:"The government announced that old power stations would be closed."},
+  {de:"Massentierhaltung ist ein wichtiger Faktor für den Klimawandel.",
+   en:"Factory farming is an important factor in climate change."},
+  {de:"Kannst du dir vorstellen, auf ein Auto zu verzichten?",
+   en:"Can you imagine doing without a car?"},
+  {de:"Der Arbeitgeber ermutigt seine Mitarbeiter, mit dem Fahrrad zur Arbeit zu kommen.",
+   en:"The employer encourages his employees to come to work by bike."},
+  {de:"Schließlich wird erneuerbare Energie billiger sein als Kohle.",
+   en:"Eventually, renewable energy will be cheaper than coal."}
+];
+
+function buildTranslate() {
+  const c = document.getElementById("translate-container");
+  c.innerHTML = translateData.map((t, i) => `
+    <div class="exercise">
+      <p><strong>${i+1}. 🇩🇪 ${t.de}</strong></p>
+      <textarea id="tr-${i}" rows="2"
+        style="width:100%;border:2px solid #c8e6c9;border-radius:6px;
+               padding:.5rem;font-size:.95rem;resize:vertical;"
+        placeholder="Write your English translation here…"></textarea>
+      <button class="btn" style="margin-top:.4rem;" onclick="toggleAnswer(${i})">
+        Show / Hide Answer
+      </button>
+      <div id="tr-ans-${i}"
+           style="display:none;margin-top:.5rem;background:#e8f5e9;
+                  padding:.6rem .9rem;border-radius:6px;">
+        ✅ <strong>Suggested answer:</strong> ${t.en}
+      </div>
+    </div>`).join("");
+}
+
+function toggleAnswer(i) {
+  const d = document.getElementById(`tr-ans-${i}`);
+  d.style.display = d.style.display === "none" ? "block" : "none";
+}
+
+/* ═══════════════════════════════════════════
+   MINI CROSSWORD  (10 × 10)
+═══════════════════════════════════════════ */
+/*
+  Layout (0-indexed, row × col):
+  1A DUTY     → row 0, col 0, across  (4)
+  1D FRAUD    → row 0, col 3, down    (5)
+  2A DROUGHT  → row 2, col 0, across  (7)
+  2D CABLE    → row 0, col 6, down    (5)
+  3A MOOD     → row 4, col 1, across  (4)
+  4A CALM     → row 6, col 0, across  (4)
+  3D VOTE     → row 2, col 9, down    (4)
+  5A EQUAL    → row 8, col 2, across  (5)
+*/
+const cwWords = [
+  {word:"DUTY",    row:0, col:0, dir:"across", clue:"1A. Responsibility or obligation (Pflicht)"},
+  {word:"FRAUD",   row:0, col:3, dir:"down",   clue:"1D. Deception for financial gain (Betrug)"},
+  {word:"DROUGHT", row:2, col:0, dir:"across", clue:"2A. A long dry period without rain (Dürre)"},
+  {word:"CABLE",   row:0, col:6, dir:"down",   clue:"2D. A wire for transmitting electricity (Kabel)"},
+  {word:"MOOD",    row:4, col:1, dir:"across", clue:"3A. Emotional state; how you feel (Stimmung)"},
+  {word:"CALM",    row:6, col:0, dir:"across", clue:"4A. Relaxed and not nervous (ruhig)"},
+  {word:"VOTE",    row:2, col:9, dir:"down",   clue:"3D. To choose in an election (abstimmen)"},
+  {word:"EQUAL",   row:8, col:2, dir:"across", clue:"5A. Fair; the same for everyone (gleich)"}
+];
+
+const CW_ROWS = 10, CW_COLS = 10;
+
+function buildCrossword() {
+  // Build answer grid
+  const grid = Array.from({length: CW_ROWS}, () => Array(CW_COLS).fill(null));
+  cwWords.forEach(w => {
+    for (let k = 0; k < w.word.length; k++) {
+      const r = w.dir === "across" ? w.row     : w.row + k;
+      const c = w.dir === "across" ? w.col + k : w.col;
+      if (r < CW_ROWS && c < CW_COLS) grid[r][c] = w.word[k];
+    }
+  });
+
+  // Render grid
+  const g = document.getElementById("cw-grid");
+  g.innerHTML = "";
+  for (let r = 0; r < CW_ROWS; r++) {
+    for (let c = 0; c < CW_COLS; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cw-cell";
+      if (grid[r][c]) {
+        const inp = document.createElement("input");
+        inp.type = "text"; inp.maxLength = 1;
+        inp.dataset.answer = grid[r][c];
+        inp.id = `cw-${r}-${c}`;
+        cell.appendChild(inp);
+      } else {
+        cell.classList.add("black");
+      }
+      g.appendChild(cell);
+    }
+  }
+
+  // Add clue numbers to first cell of each word
+  cwWords.forEach((w, idx) => {
+    const cell = document.getElementById(`cw-${w.row}-${w.col}`);
+    if (cell) {
+      const num = document.createElement("span");
+      num.className = "cw-num";
+      num.textContent = idx + 1;
+      cell.appendChild(num);
+    }
+  });
+
+  // Render clues
+  const across = cwWords.filter(w => w.dir === "across");
+  const down   = cwWords.filter(w => w.dir === "down");
+  document.getElementById("cw-clues").innerHTML =
+    "<h3>Across</h3>" + across.map(w => `<p>${w.clue}</p>`).join("") +
+    "<h3>Down</h3>"   + down  .map(w => `<p>${w.clue}</p>`).join("");
+}
+
+function checkCrossword() {
+  let ok = 0, total = 0;
+  document.querySelectorAll("[id^='cw-']").forEach(inp => {
+    if (inp.tagName !== "INPUT") return;
+    total++;
+    if (inp.value.toUpperCase() === inp.dataset.answer) {
+      inp.style.color = "#2e7d32"; ok++;
+    } else {
+      inp.style.color = "#c62828";
+    }
+  });
+  setFeedback("cw-feedback", ok, total, "letters");
+}
+
+function revealCrossword() {
+  document.querySelectorAll("[id^='cw-']").forEach(inp => {
+    if (inp.tagName !== "INPUT") return;
+    inp.value = inp.dataset.answer;
+    inp.style.color = "#555";
+  });
+}
+
+/* ═══════════════════════════════════════════
+   HELPER
+═══════════════════════════════════════════ */
+function setFeedback(id, ok, total, unit = "correct") {
+  const el = document.getElementById(id);
+  el.textContent = `Result: ${ok} / ${total} ${unit}.`;
+  el.className = "feedback " + (ok === total ? "good" : "bad");
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  buildVocabTable();
+  initCloze();
+  initMatching();
+  buildDefQuiz();
+  buildIrregular();
+  buildWordOrder();
+  buildTF();
+  buildTranslate();
+  buildCrossword();
+});
+</script>
+</body>
+</html>
